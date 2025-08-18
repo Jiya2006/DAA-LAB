@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#define INF 9999
+
+int find(int parent[], int i) {
+	if (parent[i] != i)
+		parent[i] = find(parent, parent[i]);
+	return parent[i];
+
+}
+
+
+void union1(int parent[], int rank[], int i, int j) {
+	int root1 = find(parent, i);
+	int root2 = find (parent, j);
+
+	if (rank[root1] < rank[root2]){
+		parent[root1] = root2;
+	}else if (rank[root1] > rank[root2]){
+		parent[root2] = root1;
+	}else{
+		parent[root2] = root1;
+		rank[root1]++;
+	}
+}
+
+
+void kruskalMST(int **cost, int V) {
+	int *parent = (int *)malloc(V * sizeof(int));
+	int *rank = (int *)calloc(V, sizeof(int));
+	for(int i = 0; i < V; i++)
+		parent[i] = i;
+
+	int edge_count = 0;
+	int total_cost = 0;
+	int edge_num = 0;
+	while (edge_count < V - 1){
+		int min = INF;
+		int a = -1, b = -1;
+
+		for (int i = 0; i < V ; i++){
+			for(int j = 0; j < V; j++){
+				if (find(parent, i) != find(parent, j) && cost[i][j] < min){
+					min = cost[i][j];
+					a = i;
+					b = j;
+				}
+			}
+		}
+		if (a != -1 && b != -1){
+			union1(parent, rank, a, b);
+			printf("Edge %d:(%d, %d) cost:%d\n", edge_num++, a, b, cost[a][b]);
+			total_cost += cost[a][b];
+			edge_count++;
+		}else{
+			break;
+		}
+	}
+		printf("Minimum cost= %d\n",total_cost);
+	free(parent);
+	free(rank);
+}
+
+
+int main() {
+    int V;
+    printf("No of vertices: ");
+    scanf("%d", &V);
+
+    int **cost = (int **)malloc(V * sizeof(int *));
+    for (int i = 0; i < V; i++)
+        cost[i] = (int *)malloc(V * sizeof(int));
+
+    printf("Adjacency matrix:\n");
+    for (int i = 0; i < V; i++)
+        for (int j = 0; j < V; j++)
+            scanf("%d", &cost[i][j]);
+
+    kruskalMST(cost, V);
+
+    for (int i = 0; i < V; i++)
+        free(cost[i]);
+    free(cost);
+
+    return 0;
+}
