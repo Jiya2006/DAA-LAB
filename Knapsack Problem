@@ -1,0 +1,42 @@
+#include<stdio.h>
+#define MAX 100
+
+int max(int a, int b){
+	return(a>b) ? a : b;
+}
+int knapsack(int val[],int wt[],int N, int W){
+	int dp[MAX + 1][MAX + 1];
+
+	for(int i = 0; i <= N; i++){
+		for(int w = 0; w <= W; w++){
+			if(i == 0 || w == 0)
+				dp[i][w] = 0;
+			else if(wt[i - 1] <= w)
+				dp[i][w] = max(dp[i - 1][w], val[i - 1] + dp[i - 1][w - wt[i - 1]]);
+			else
+				dp[i][w] = dp[ i -1][w];
+		}
+	}
+	return dp[N][W];
+}
+int main(){
+	int N,W;
+	int val[MAX], wt[MAX];
+
+	scanf("%d",&N);
+	for(int i = 0; i < N; i++)
+		scanf("%d",&val[i]);
+	for(int i = 0; i < N; i++)
+		scanf("%d",&wt[i]);
+	scanf("%d",&W);
+
+	int result = knapsack(val,wt,N,W);
+	printf("%d\n",result);
+	return 0;
+
+
+
+
+
+	
+}
